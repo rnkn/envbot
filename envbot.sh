@@ -1,7 +1,7 @@
 #! /bin/bash
 
 function envbot_auto() {
-    if [[ "$PWD" != "$OLDPWD" ]]
+    if [[ "$PWD" != "$ENVBOT_PWD" ]]
     then
         local _env="$PWD/.env"
 
@@ -46,6 +46,7 @@ function envbot_auto() {
                 fi
             done < $_env
         fi
+        ENVBOT_PWD="$PWD"
     fi
 }
 
