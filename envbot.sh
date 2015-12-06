@@ -42,7 +42,6 @@ function envbot_auto() {
                         ENVBOT_TMP+=("$_name=$_globalvalue")
                     fi
                     export $_name="$_value"
-                    echo "envbot: $_name=$_value"
                 fi
             done < $_env
         fi
