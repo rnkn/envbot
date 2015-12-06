@@ -1,39 +1,50 @@
-function envbot_check() {
-    for line in $1
-    do
-        local _name="${line%%=*}"
-        local _value="${line##*=}"
-        if [ "$_name" == "$2" ]
-        then
-            return 1
-            break
-        fi
-    done
-    return 0
-}
+#! /bin/bash
 
 function envbot_auto() {
-    if [ "$PWD" != "$OLDPWD" ]
+    if [[ "$PWD" != "$OLDPWD" ]]
     then
         local _env="$PWD/.env"
-        if [ -r "$_env" ]
+
+        for line in ${ENVBOT_TMP[@]}
+        do
+            local _name="${line%%=*}"
+            local _value="${line##*=}"
+            local _globalvalue="${!_name}"
+
+            if [[ "$_value" != "$_globalvalue" ]]
+            then
+                export $_name="$_value"
+            fi
+        done
+
+        unset ENVBOT_TMP
+
+        if [[ -r "$_env" ]]
         then
             while IFS="=" read -r name value
             do
                 local _name=$(eval echo "$name")
                 local _value=$(eval echo "$value")
+                local _globalvalue="${!_name}"
 
-                if [ "$_value" != "${!_name}" ]
+                if [[ "$_value" != "$_globalvalue" ]]
                 then
-                    if envbot_check $ENVBOT_TMP $_name
+                    for line in ${ENVBOT_TMP[@]}
+                    do
+                        if [[ "$line" =~ ^$_name ]]
+                        then
+                            local _envbot_set=0
+                            break
+                        fi
+                    done
+                    if [[ ! $_envbot_set ]]
                     then
-                        ENVBOT_TMP=$(echo -e "$ENVBOT_TMP\n$_name=${!_name}")
+                        ENVBOT_TMP+=("$_name=$_globalvalue")
                     fi
-                    export "$_name"="$_value"
+                    export $_name="$_value"
+                    echo "envbot: $_name=$_value"
                 fi
             done < $_env
-        else
-            source "$HOME/.bash_profile"
         fi
     fi
 }
