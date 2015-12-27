@@ -1,9 +1,8 @@
-#! /bin/bash
+#! /bin/env bash
 
 function envbot_auto() {
     if [[ "$PWD" != "$ENVBOT_PWD" ]]
     then
-        local _env="$PWD/.env"
 
         for line in ${ENVBOT_TMP[@]}
         do
@@ -16,35 +15,43 @@ function envbot_auto() {
                 export $_name="$_value"
             fi
         done
-
         unset ENVBOT_TMP
 
-        if [[ -r "$_env" ]]
-        then
-            while IFS="=" read -r name value
-            do
-                local _name=$(eval echo "$name")
-                local _value=$(eval echo "$value")
-                local _globalvalue="${!_name}"
+        local _path="$PWD/"
+        while [[ -n "$_path" ]]
+        do
+            _path="${_path%/*}"
+            local _env="${_path}/.env"
 
-                if [[ "$_value" != "$_globalvalue" ]]
-                then
-                    for line in ${ENVBOT_TMP[@]}
-                    do
-                        if [[ "$line" =~ ^$_name ]]
-                        then
-                            local _envbot_set=0
-                            break
-                        fi
-                    done
-                    if [[ ! $_envbot_set ]]
+            if [[ -r "$_env" ]]
+            then
+                while IFS="=" read -r name value
+                do
+                    local _name=$(eval echo "$name")
+                    local _value=$(eval echo "$value")
+                    local _globalvalue="${!_name}"
+                    local _set
+
+                    if [[ "$_value" != "$_globalvalue" ]]
                     then
-                        ENVBOT_TMP+=("$_name=$_globalvalue")
+                        for line in ${ENVBOT_TMP[@]}
+                        do
+                            if [[ "$line" =~ ^$_name ]]
+                            then
+                                _set=0
+                                break
+                            fi
+                        done
+                        if [[ ! $_set ]]
+                        then
+                            ENVBOT_TMP+=("$_name=$_globalvalue")
+                            export $_name="$_value"
+                            # printf "envbot: Set %s=%s\n" "$_name" "$_value"
+                        fi
                     fi
-                    export $_name="$_value"
-                fi
-            done < $_env
-        fi
+                done < $_env
+            fi
+        done
         ENVBOT_PWD="$PWD"
     fi
 }
