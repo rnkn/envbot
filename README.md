@@ -16,12 +16,12 @@ ENVIRONMENT_VAR2="$PWD/value.txt"
 ~~~
 
 To enable feedback when environment variables are changed, uncomment
-line 49:
+the following:
 ~~~
-printf "envbot: Set %s=%s\n" "$_name" "$_value"
+# printf "envbot: Set %s=%s\n" "$_name" "$_value"
 ~~~
 
 ## Todo
 
-- [ ] walk up directory structure
+- [X] walk up directory structure
 - [ ] unset prior variables?
