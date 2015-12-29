@@ -1,12 +1,18 @@
 # envbot
 
-I wanted a shell script that would allow directory-specifc environment
-variables with a simple `.env` file in the directory, hence envbot.
+envbot is a Bash script that, upon changing directory, looks for an
+`.env` file in the current working directory and parent directories and
+sets environment variables accordingly.
+
+Existing environment variables are cached and reset when changing to
+another directory.
+
+An `.env` file in a lower directory takes precedence over one in a
+higher directory.
 
 ## Installation
 
-Source this script from your `.bashrc` (sourcing from `.bash_profile` will not
-work for non-login shells).
+Source this script from your `.bash_profile` or `.bashrc`.
 
 The format of `.env` file is as you'd expect, and allows for parameter
 expansion:
@@ -25,3 +31,4 @@ the following:
 
 - [X] walk up directory structure
 - [ ] unset prior variables?
+- [X] write proper README
