@@ -1,4 +1,4 @@
-#! /bin/env bash
+#! /usr/bin/env bash
 
 function envbot_auto() {
     if [[ "$PWD" != "$ENVBOT_PWD" ]]
