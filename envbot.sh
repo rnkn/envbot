@@ -49,7 +49,7 @@ function envbot_auto() {
                             # printf "envbot: Set %s=%s\n" "$_name" "$_value"
                         fi
                     fi
-                done < $_env
+                done < "$_env"
             fi
         done
         ENVBOT_PWD="$PWD"
